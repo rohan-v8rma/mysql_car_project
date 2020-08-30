@@ -1,41 +1,33 @@
 import mysql.connector
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-db_host = os.environ.get('db_host')
-db_user = os.environ.get('db_user')
-db_password = os.environ.get('db_password')
-db_name = os.environ.get('db_name')
-auth_plugin = os.environ.get('auth_plugin')
+import settings
 
 def get_db_connection():
-    db_connection = mysql.connector.connect(host = db_host, user = db_user\
-, password = db_password, database = db_name, auth_plugin = auth_plugin)
+    db_connection = mysql.connector.connect(host = settings.db_host, user = settings.db_user\
+, password = settings.db_password, database = settings.db_name, auth_plugin = settings.auth_plugin)
     cursor = db_connection.cursor()
     return [db_connection, cursor]
 
 def car_reorder(t):
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('UPDATE ' + t[2] + ' SET Units = 3 where name = \'' + t[1] + '\'')
-    cars_db.commit()
-    cars_db.close()
+    db_connection, cursor = get_db_connection()
+    cursor.execute('UPDATE ' + t[2] + ' SET Units = 3 where name = \'' + t[1] + '\'')
+    db_connection.commit()
+    db_connection.close()
 
 def car_sold(t):
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('UPDATE ' + t[2] + ' SET Units = Units - 1 where name = \'' + t[1] + '\'')
-    cars_db.commit()
-    cars_db.close()
+    db_connection, cursor = get_db_connection()
+    cursor.execute('UPDATE ' + t[2] + ' SET Units = Units - 1 where name = \'' + t[1] + '\'')
+    db_connection.commit()
+    db_connection.close()
 
 def display_models(t, condition):
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('select * from ' + t, condition)
+    db_connection, cursor = get_db_connection()
+    cursor.execute('select * from ' + t, condition)
     models = []
     max_l1 = 0
     max_l2 = 0
     max_l3 = 0
     max_l4 = 0 
-    for model in mycursor:
+    for model in cursor:
         name_l = len(model[1])
         serial_l = len(str(model[0]))
         price_l = len(str(model[3]))
@@ -55,45 +47,45 @@ def display_models(t, condition):
         if unit_l > max_l4:
             max_l4 = unit_l
     n = 3
-    mycursor.execute('select * from ' + t + condition)
-    for model in mycursor:
+    cursor.execute('select * from ' + t + condition)
+    for model in cursor:
         print(str(model[0]).rjust(max_l2) +  ' ' * n + model[1].ljust(max_l1) + ' ' * n + model[2] + ' ' * n + str(model[3]).rjust(max_l3) + ' ' * n + str(model[4]).rjust(max_l4) )
     return [models ,len(str(model[0]).rjust(max_l2) +  ' ' * n + model[1].ljust(max_l1) + ' ' * n + model[2] + ' ' * n + str(model[3]).rjust(max_l3) + ' ' * n + str(model[4]).rjust(max_l4) )]
-    cars_db.close()
+    db_connection.close()
 
 def car_types():
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('show tables')
+    db_connection, cursor = get_db_connection()
+    cursor.execute('show tables')
     car_type = []
-    for x in mycursor:
+    for x in cursor:
         car_type.append(x[0])
-    cars_db.close()
+    db_connection.close()
     return car_type
 
 def max_min_checker():
     max = 0
     min = ''
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('''show tables''')
-    tables = mycursor.fetchall()
+    db_connection, cursor = get_db_connection()
+    cursor.execute('''show tables''')
+    tables = cursor.fetchall()
     for table in tables:
         name = table[0]
-        mycursor.execute('select min(price) from ' + name)
-        price1 = mycursor.fetchall()[0][0]
+        cursor.execute('select min(price) from ' + name)
+        price1 = cursor.fetchall()[0][0]
         if min == '':
             min = price1
         elif price1 < min:
             min = price1
-        mycursor.execute('select max(price) from ' + name)
-        price2 = mycursor.fetchall()[0][0]
+        cursor.execute('select max(price) from ' + name)
+        price2 = cursor.fetchall()[0][0]
         if price2 > max:
             max = price2
     return (max, min)
  
 def buying_a_car(serial, type):
-    cars_db, mycursor = get_db_connection()
-    mycursor.execute('Select * from ' + type + ' where serial_number = ' + str(serial))
-    model_chosen = mycursor.fetchall()[0] 
+    db_connection, cursor = get_db_connection()
+    cursor.execute('Select * from ' + type + ' where serial_number = ' + str(serial))
+    model_chosen = cursor.fetchall()[0] 
     print('The ' + model_chosen[1] + ' will cost you ' + str(model_chosen[3] * 1.28) +  ' after taxes')
     option = 0 
     while option not in [1,2]:
