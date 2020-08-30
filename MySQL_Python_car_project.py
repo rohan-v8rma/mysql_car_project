@@ -1,25 +1,34 @@
 import mysql.connector
+from dotenv import load_dotenv
+import os
 
-p = 'gorgon123' 
+load_dotenv()
+db_host = os.environ.get('db_host')
+db_user = os.environ.get('db_user')
+db_password = os.environ.get('db_password')
+db_name = os.environ.get('db_name')
+auth_plugin = os.environ.get('auth_plugin')
+
+def get_db_connection():
+    db_connection = mysql.connector.connect(host = db_host, user = db_user\
+, password = db_password, database = db_name, auth_plugin = auth_plugin)
+    cursor = db_connection.cursor()
+    return [db_connection, cursor]
+
 def car_reorder(t):
-    cars_db = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = p, database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = cars_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('UPDATE ' + t[2] + ' SET Units = 3 where name = \'' + t[1] + '\'')
     cars_db.commit()
     cars_db.close()
 
 def car_sold(t):
-    cars_db = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = p, database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = cars_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('UPDATE ' + t[2] + ' SET Units = Units - 1 where name = \'' + t[1] + '\'')
     cars_db.commit()
     cars_db.close()
 
 def display_models(t, condition):
-    cars_db = mysql.connector.connect(host = 'localhost', user = 'root', password = p, database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = cars_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('select * from ' + t, condition)
     models = []
     max_l1 = 0
@@ -53,22 +62,18 @@ def display_models(t, condition):
     cars_db.close()
 
 def car_types():
-    car_db = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = p, database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = car_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('show tables')
     car_type = []
     for x in mycursor:
         car_type.append(x[0])
-    car_db.close()
+    cars_db.close()
     return car_type
 
 def max_min_checker():
     max = 0
     min = ''
-    car_db = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = 'gorgon123', database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = car_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('''show tables''')
     tables = mycursor.fetchall()
     for table in tables:
@@ -86,9 +91,7 @@ def max_min_checker():
     return (max, min)
  
 def buying_a_car(serial, type):
-    car_db = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = 'gorgon123', database = 'cars', auth_plugin = 'mysql_native_password')
-    mycursor = car_db.cursor()
+    cars_db, mycursor = get_db_connection()
     mycursor.execute('Select * from ' + type + ' where serial_number = ' + str(serial))
     model_chosen = mycursor.fetchall()[0] 
     print('The ' + model_chosen[1] + ' will cost you ' + str(model_chosen[3] * 1.28) +  ' after taxes')

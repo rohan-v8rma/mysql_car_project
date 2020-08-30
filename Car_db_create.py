@@ -1,13 +1,20 @@
 import mysql.connector
+from dotenv import load_dotenv
+import os
 
-p = 'root'
+load_dotenv()
+db_host = os.environ.get('db_host')
+db_user = os.environ.get('db_user')
+db_password = os.environ.get('db_password')
+db_name = os.environ.get('db_name')
+auth_plugin = os.environ.get('auth_plugin')
 
-mydb = mysql.connector.connect(host = 'localhost', user = 'root'\
-, password = p, auth_plugin = 'mysql_native_password')
+mydb = mysql.connector.connect(host = db_host, user = db_user\
+, password = db_password, auth_plugin = auth_plugin)
 mycursor = mydb.cursor()
 
-mycursor.execute('CREATE DATABASE Cars')
-mycursor.execute('USE Cars')
+mycursor.execute('CREATE DATABASE ' + db_name)
+mycursor.execute('USE ' + db_name)
 mydb.commit()
 
 mycursor.execute('''CREATE TABLE Saloon(Serial_number int PRIMARY KEY
