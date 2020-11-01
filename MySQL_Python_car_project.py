@@ -52,7 +52,7 @@ def get_car_types():
 def get_price_range():
     max_price = 0
     db_connection, cursor = get_db_connection()
-    cursor.execute('''show tables''')
+    cursor.execute('show tables')
     tables = cursor.fetchall()
     for index, table in enumerate(tables):
         name = table[0]
@@ -68,7 +68,7 @@ def get_price_range():
  
 def buying_a_car(serial_number, car_type):
     db_connection, cursor = get_db_connection()
-    cursor.execute('Select * from ' + car_type + ' where serial_number = ' + str(serial_number))
+    cursor.execute('select * from ' + car_type + ' where serial_number = ' + str(serial_number))
     model_chosen = cursor.fetchall()[0] 
     print('The ' + model_chosen[1] + ' will cost you ' + str(model_chosen[3] * 1.28) +  ' after taxes')
     option = 0 
@@ -83,7 +83,6 @@ def buying_a_car(serial_number, car_type):
         decrease_stock(car_type, serial_number, 1)
     elif option == 2:
         print('Thanks for visiting us. We hope to do business with you in the near future.')
-'''Menu for DBMS'''
     
 def display_car_type_list(car_types):
     for index, car_type in enumerate(car_types):
@@ -101,7 +100,7 @@ def select_car_type(car_types):
 
 def increase_stock(table_name ,serial_number, increment):
     db_connection, cursor = get_db_connection() 
-    cursor.execute('UPDATE ' + table_name + ' SET Units = Units + ' + str(increment) + ' where Serial_number = ' + str(serial_number) + ';')
+    cursor.execute('update ' + table_name + ' SET Units = Units + ' + str(increment) + ' where Serial_number = ' + str(serial_number) + ';')
     db_connection.commit()
     db_connection.close()
 
@@ -126,7 +125,7 @@ def price_change(table_name, serial_number, new_price):
 
 def decrease_stock(table_name, serial_number, decrement):
     db_connection, cursor = get_db_connection() 
-    cursor.execute('UPDATE ' + table_name + ' SET Units = Units - ' + str(decrement) + ' where Serial_number = ' + str(serial_number) + ';')
+    cursor.execute('update ' + table_name + ' SET Units = Units - ' + str(decrement) + ' where Serial_number = ' + str(serial_number) + ';')
     db_connection.commit()
     db_connection.close()
 
@@ -136,16 +135,10 @@ def add_vehicle(table_name, name, body_type, price):
     l = cursor.fetchall()
 
     serial = l[-1][0]
-    cursor.execute('insert into ' + table_name + ' values(' + str(serial + 1) + ', ' + '\'' + name + '\'' + ', ' + '\'' +body_type + '\'' + ', ' + str(price) + ', ' + '0);')
+    cursor.execute('insert into ' + table_name + ' values(' + str(serial + 1) + ', ' + '\'' + name + '\'' + ', ' + '\'' +body_type + '\'' + ', ' + str(price) + ', ' + '2);')
     db_connection.commit()
     db_connection.close()
     return serial
-
-def supp_reroll(table_name):
-    db_connection, cursor = get_db_connection() 
-    cursor.execute('update ' + table_name + ' set Units = Units + 2 where Units = 0;')
-    db_connection.commit()
-    db_connection.close()
 
 def remove_vehicle(table_name, serial_number):
     db_connection, cursor = get_db_connection() 
@@ -256,7 +249,6 @@ while True:
                 print('New car brand has been added. Order for addition of units has been sent to the supplier which we will recieve in a few days.')
                 print('Parsing Order.....')
                 time.sleep(7)
-                supp_reroll(selected_car_type)
             else:
                 break
 
@@ -264,7 +256,6 @@ while True:
             input_serial_number = int(input('Enter serial number of vehicle to be removed--> '))
             serial_number = check_serial_number(selected_car_type, input_serial_number)
             remove_vehicle(selected_car_type, serial_number)
-            supp_reroll(selected_car_type)
             print('Changes Saved.')
 
         if option == 5:
