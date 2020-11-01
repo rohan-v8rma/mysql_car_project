@@ -16,7 +16,7 @@ def car_reorder(t):
 
 def display_models(table_name, condition):
     db_connection, cursor = get_db_connection()
-    cursor.execute('select * from ' + table_name + condition)
+    cursor.execute('select * from ' + table_name, condition)
     max_l1 = 0
     max_l2 = 0
     max_l3 = 0
@@ -35,7 +35,7 @@ def display_models(table_name, condition):
         if unit_l > max_l4:
             max_l4 = unit_l
     n = 3
-    cursor.execute('select * from ' + table_name + condition)
+    cursor.execute('select * from ' + table_name, condition)
     for model in cursor:
         print(str(model[0]).rjust(max_l2) +  ' ' * n + model[1].ljust(max_l1) + ' ' * n + model[2] + ' ' * n + str(model[3]).rjust(max_l3) + ' ' * n + str(model[4]).rjust(max_l4) )
     db_connection.close()
