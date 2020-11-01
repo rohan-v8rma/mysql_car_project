@@ -175,7 +175,8 @@ while True:
             car_types = get_car_types()
             if option == 1:
                 selected_car_type = select_car_type(car_types)
-                option = int(input('\nEnter >>> '))
+                input_serial_number = int(input('\nEnter >>> '))
+                serial_number = check_serial_number(selected_car_type, input_serial_number)
                 print('')
                 buying_a_car(option, selected_car_type)
             elif option == 2:
@@ -197,11 +198,12 @@ while True:
                     print('')
                     display_models(car_type, ' where price < ' + str(budget + 1))
                     print('')
-                k = []
-                while len(k) != 2:
-                    k = eval(input('Please enter Serial No and Body type of the car you want to buy in this format <[1, "Saloon"]> \n\nEnter >>> '))
+                input_from_user = []
+                while len(input_from_user) != 2:
+                    input_from_user = eval(input('Please enter Serial No and Body type of the car you want to buy in this format <[1, "Saloon"]> \n\nEnter >>> '))
                     print('')
-                buying_a_car(k[0], k[1])
+                serial_number = check_serial_number(input_from_user[1], input_from_user[0])
+                buying_a_car(serial_number, input_from_user[1])
             elif option == 3:
                 break
 
