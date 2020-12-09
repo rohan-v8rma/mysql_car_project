@@ -1,3 +1,4 @@
 .env
 settings.pyc
 __pycache__
+.scannerwork
