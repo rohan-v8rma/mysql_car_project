@@ -43,9 +43,8 @@ def get_car_types():
     db_connection, cursor = get_db_connection()
     cursor.execute('show tables')
     car_types = []
-    count = 1 
     for x in cursor:
-        car_types.append(str(count) + '. ' + x[0])
+        car_types.append(x[0])
     db_connection.close()
     return car_types
 
@@ -73,7 +72,7 @@ def buying_a_car(serial_number, car_type):
     print('The ' + model_chosen[1] + ' will cost you ' + str(model_chosen[3] * 1.28) +  ' after taxes')
     option = 0 
     while option not in [1,2]:
-        option = int(input('Do you wish to buy this car? \n1. Yes \n2. No \n\n Enter >>> '))
+        option = int(input('Do you wish to buy this car? \n1. Yes \n2. No \nEnter >>> '))
         print('')
     if option == 1:
         print('Congrulations! You are now the proud owner of a ' + model_chosen[1] + '!')
@@ -92,9 +91,10 @@ def select_car_type(car_types):
     display_car_type_list(car_types)
     option = 0
     while option not in range(1, len(car_types) + 1):
-        option = int(input('\nEnter >>> '))
+        option = int(input('Enter >>> '))
         print('')
     selected_car_type = car_types[option - 1]
+    print('')
     display_models(selected_car_type, '')
     return selected_car_type
 
@@ -154,35 +154,49 @@ def check_serial_number(selected_car_type, serial_number):
         updated_serial_number = check_serial_number(selected_car_type, new_serial_number)
         return updated_serial_number
 
-print('Welcome to the finest luxury car dealership in the country. \n')
+print('Welcome to the finest luxury car dealership in the country.')
 while True:
     option = 0
     while option not in [1,2,3]:
-        option = int(input('1. If you are a Customer \n2. If you are the Dealer/Supplier \n3. Exit \n\nEnter >>> '))
-        print('')
+        print('\n')
+        option = int(input('''
+1. If you are a Customer
+2. If you are the Dealer/Supplier
+3. Exit
+Enter >>> '''))
     if option == 1:
         option = 0
         while option not in [1,2]:
-            option = int(input('1. if you want to buy a car or get a quote on the car \n2. to exit \n\nEnter >>> '))
             print('')
+            option = int(input('''
+1. Buy a car or get a quote on the car
+2. Exit
+Enter >>> '''))
+        print('')
         if option == 2:
             break
         elif option == 1:
             option = 0
             while option not in [1,2,3]:
-                option = int(input('1. if you want to buy according to body type \n2. if you want to buy according to budget \n3. to exit \n\nEnter >>> '))
+                option = int(input('''
+1. Buy according to body type
+2. Buy according to budget
+3. Exit
+Enter >>> '''))
                 print('')
             car_types = get_car_types()
             if option == 1:
-                selected_car_type = select_car_type(car_types)
-                input_serial_number = int(input('\nEnter >>> '))
-                serial_number = check_serial_number(selected_car_type, input_serial_number)
                 print('')
+                selected_car_type = select_car_type(car_types)
+                
+                input_serial_number = int(input('Enter >>> '))
+                serial_number = check_serial_number(selected_car_type, input_serial_number)
+                print('\n')
                 buying_a_car(option, selected_car_type)
             elif option == 2:
                 min_price, max_price = get_price_range()
-                print('Our cars range from ' + str(min_price/10000000) + ' Cr' + ' to ' +  str(max_price/10000000) + ' Cr')
                 print('')
+                print('Our cars range from ' + str(min_price/10000000) + ' Cr' + ' to ' +  str(max_price/10000000) + ' Cr')
                 budget = 'r'
                 while budget[-1].lower() != 'cr': 
                     budget = input('Please enter your max budget in the specified range in the format <1 Cr>\n\nEnter >>> ')
@@ -193,67 +207,68 @@ while True:
                     print('Sorry! No cars are available within your budget.')
                     break
                 print('')
-                for car_type in car_types:
-                    print(car_type.upper())
+                for num, car_type in enumerate(car_types):
+                    print(str(num + 1) + '. ' + car_type.upper())
                     print('')
                     display_models(car_type, ' where price < ' + str(budget + 1))
                     print('')
-                input_from_user = []
-                while len(input_from_user) != 2:
-                    input_from_user = eval(input('Please enter Serial No and Body type of the car you want to buy in this format <[1, "Saloon"]> \n\nEnter >>> '))
-                    print('')
-                serial_number = check_serial_number(input_from_user[1], input_from_user[0])
-                buying_a_car(serial_number, input_from_user[1])
+                input_from_user_1 = int(input('Please enter the Serial Number of the body type you want.\nEnter >>> '))
+                print('')
+                input_from_user_2 = int(input('Please enter the Index of the model you want.\nEnter >>> '))
+                print('')
+                serial_number = check_serial_number(car_types[input_from_user_1 - 1], input_from_user_2)
+                buying_a_car(serial_number, car_types[input_from_user_1 - 1])
             elif option == 3:
                 break
 
     elif option == 2:
-        print('Here is our whole catalogue:\n')
+        print('\n')
+        print('Car types in stock:')
         car_types = get_car_types()
         selected_car_type = select_car_type(car_types)
-        print('Hello Owner. Here is our market.')
-        option = int(input('What would you like to do?\n\n1. to decrease units of a vehicle\n2. to change price of any vehicle\n3. to add new car brand\n4. to remove the whole vehicle brand\n5. quit\n\nENTER--> '))
-
+        print('\n\nThese are the models in stock.')
+        option = int(input('''What would you like to do?\n\n
+1. Decrease units of a vehicle
+2. Change price of any vehicle
+3. Add a new vehicle
+4. Remove a vehicle
+5. Quit
+Enter >>> '''))
         if option == 1:
-            input_from_user = eval(input('Enter serial number of vehicle and the decrement in form <[serial, decrement]>--> '))
-            serial_number = check_serial_number(selected_car_type, input_from_user[0])
-            decrease_stock(selected_car_type, serial_number, input_from_user[1])
+            print('\n')
+            input_from_user_1 = int(input('Which model stock do you want to reduce?\nEnter >>> '))
+            input_from_user_2 = int(input('How many units do you want to reduce?\nEnter >>> '))
+            serial_number = check_serial_number(selected_car_type, input_from_user_1)
+            decrease_stock(selected_car_type, serial_number, input_from_user_2)
             print('Your changes have been made.')
 
         if option == 2:
-            input_from_user = eval(input('Enter serial number of vehicle and new price in form <[serial, new_price]>--> '))
-            serial_number = check_serial_number(selected_car_type, input_from_user[0])
-            price_change(selected_car_type, serial_number, input_from_user[1])
+            print('\n')
+            input_from_user_1 = int(input('Which model price do you want to change?\nEnter >>> '))
+            input_from_user_2 = int(input('Please enter the new price.\nEnter >>> '))
+            serial_number = check_serial_number(selected_car_type, input_from_user_1)
+            price_change(selected_car_type, serial_number, input_from_user_2)
             print('Your changes have been made.')
 
         if option == 3:
-            vehicle = eval(input('Enter the details of desired car in form <[Name, Body_Type, Price]>--> '))
-            while True:
-                if str(vehicle[2]).isnumeric() == False:
-                    print('Kindly enter a valid price!')
-                    m = vehicle
-                    vehicle = eval(input('Enter the details of desired car in form <[Name, Body_Type, Price]>-->(or press q to quit)'))
-
-                    if vehicle == 'q':
-                        m, vehicle = vehicle, m
-                        break
-                    else:
-                        continue
-                elif vehicle[2]>1000000000:
-                    print('Price out of budget!!')
-                    vehicle = eval(input('Enter the details of desired car in form <[Name, Body_Type, Price]>--> '))
-                else:
-                    break
-
-            if str(vehicle[2]).isnumeric() == True and vehicle[2] < 1000000000:
-                add_vehicle(selected_car_type, vehicle[0], vehicle[1], vehicle[2])
-
-                print('New car brand has been added. Order for addition of units has been sent to the supplier which we will recieve in a few days.')
-            else:
-                break
+            print('\n')
+            name = str(input('Please enter the car name. \n Enter >>> '))
+            l1 = name.split()
+            for word in l1:
+                word.capitalize()
+            name = ' '.join(l1)
+            price = 0
+            while price <= 0 or price >= 1000000000:
+                price = int(input('Please enter price of the vehicle less than 100 Crores. \nEnter >>> '))
+            vehicle = [name, selected_car_type, price]
+            add_vehicle(selected_car_type, vehicle[0], vehicle[1], vehicle[2])
+            print('New vehicle has been added. Order for addition of units has been sent to the supplier which we will recieve in a few days.')
+            vehicle = [''] + vehicle
+            car_reorder(vehicle)
 
         if option == 4:
-            input_serial_number = int(input('Enter serial number of vehicle to be removed--> '))
+            print('\n')
+            input_serial_number = int(input('Enter serial number of vehicle to be removed >>> '))
             serial_number = check_serial_number(selected_car_type, input_serial_number)
             remove_vehicle(selected_car_type, serial_number)
             print('Changes Saved.')
