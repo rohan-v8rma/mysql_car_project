@@ -1,6 +1,5 @@
 import mysql.connector
 import settings
-import time
 
 def get_db_connection():
     db_connection = mysql.connector.connect(host = settings.db_host, user = settings.db_user\
@@ -44,8 +43,9 @@ def get_car_types():
     db_connection, cursor = get_db_connection()
     cursor.execute('show tables')
     car_types = []
+    count = 1 
     for x in cursor:
-        car_types.append(x[0])
+        car_types.append(str(count) + '. ' + x[0])
     db_connection.close()
     return car_types
 
@@ -158,7 +158,7 @@ print('Welcome to the finest luxury car dealership in the country. \n')
 while True:
     option = 0
     while option not in [1,2,3]:
-        option = int(input('1. if you are a Customer \n2. if you are the Dealer/Supplier \n3. to exit \n\nEnter >>> '))
+        option = int(input('1. If you are a Customer \n2. If you are the Dealer/Supplier \n3. Exit \n\nEnter >>> '))
         print('')
     if option == 1:
         option = 0
@@ -249,8 +249,6 @@ while True:
                 add_vehicle(selected_car_type, vehicle[0], vehicle[1], vehicle[2])
 
                 print('New car brand has been added. Order for addition of units has been sent to the supplier which we will recieve in a few days.')
-                print('Parsing Order.....')
-                time.sleep(7)
             else:
                 break
 
